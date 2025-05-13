@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:id="@+id/nav_add"
-    android:title="Crear reporte"
-    android:icon="@drawable/ic_add" />
+    <item android:id="@+id/nav_add"
+        android:title="Crear reporte"
+        android:icon="@drawable/ic_add"/>
     <item android:id="@+id/nav_report"
-        android:title="Reporte"
+        android:title="Consultar Reporte"
         android:icon="@drawable/ic_report"/>
     <item android:id="@+id/nav_contact"
-        android:title="Contacto"
+        android:title="Contacto ciudadano"
         android:icon="@drawable/ic_contact"/>
 </menu>
