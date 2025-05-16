@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -13,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.Manifest;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +27,16 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.io.ByteArrayOutputStream;
+
+import api.ReportApi;
+import models.Reporte;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CrearReporteActivity extends AppCompatActivity {
 
@@ -84,6 +98,7 @@ public class CrearReporteActivity extends AppCompatActivity {
         colonia = findViewById(R.id.et_colonia);
         direccion = findViewById(R.id.et_direccion);
         celular = findViewById(R.id.et_celular);
+        correo = findViewById(R.id.et_correo);
         spinerTipoReporte = findViewById(R.id.spinner_tipoReporte);
         descripcion = findViewById(R.id.et_descptcion);
         imagen = findViewById(R.id.iv_imagen);
@@ -126,25 +141,83 @@ public class CrearReporteActivity extends AppCompatActivity {
         camaraLauncher.launch(intent);
     }
 
-    private void enviarReporte(){
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://mcaconsultores.com.mx")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    ReportApi api = retrofit.create(ReportApi.class);
+
+
+    private void enviarReporte() {
         String nombreTexto  = nombre.getText().toString();
         String coloniaSeleccionada  = colonia.getText().toString();
         String direccionTexto  = direccion.getText().toString();
         String celularTexto  = celular.getText().toString();
         String correoTexto  = correo.getText().toString();
         String tipoSeleccionado = spinerTipoReporte.getSelectedItem().toString();
-        String descripçionTexto  = descripcion.getText().toString();
+        String descripcionTexto  = descripcion.getText().toString();
+        String imagenUrl = imagen.toString();
 
-        Intent intent = new Intent(this, ConfirmacionActivity.class);
-        intent.putExtra("nombre", nombreTexto);
-        intent.putExtra("colonia", coloniaSeleccionada);
-        intent.putExtra("direccion", direccionTexto);
-        intent.putExtra("celular", celularTexto);
-        intent.putExtra("correo", correoTexto);
-        intent.putExtra("tipoReporte", tipoSeleccionado);
-        intent.putExtra("descripcion", descripçionTexto);
-        startActivity(intent);
+        if (nombreTexto.isEmpty() || coloniaSeleccionada.isEmpty() || direccionTexto.isEmpty() ||
+                celularTexto.isEmpty() || correoTexto.isEmpty() || descripcionTexto.isEmpty()) {
+            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+
+        Reporte nuevoReporte = new Reporte();
+        nuevoReporte.setNombreInteresado(nombreTexto);
+        nuevoReporte.setDireccion(direccionTexto);
+        nuevoReporte.setColonia(coloniaSeleccionada);
+        nuevoReporte.setCelular(celularTexto);
+        nuevoReporte.setCorreo(correoTexto);
+        nuevoReporte.setTipo(tipoSeleccionado);
+        nuevoReporte.setDescripcion(descripcionTexto);
+        ImageView imagenView = findViewById(R.id.iv_imagen);
+        Bitmap bitmap = ((BitmapDrawable) imagenView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] byteArray = baos.toByteArray();
+        String imagenBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        nuevoReporte.setImagenUrl(imagenBase64);
+
+
+
+
+        String token = "Bearer a0f4dcad-5903-482f-8982-88ec8bc6156e";
+        Call<Reporte> call = api.enviarReporte(token, nuevoReporte);
+        call.enqueue(new Callback<Reporte>() {
+            @Override
+            public void onResponse(Call<Reporte> call, Response<Reporte> response) {
+                if (response.code() == 401) {
+                    Log.e("API", "Error 401: No autorizado. Revisa el token de autenticación.");
+                } else if (response.isSuccessful()) {
+                    Log.d("API", "Reporte enviado correctamente.");
+
+                    Log.d("DEBUG", "Texto de dirección antes de asignar: " + direccionTexto);
+                    Log.d("DEBUG", "URL de imagen antes de asignar: " + imagenUrl);
+
+
+
+                    Toast.makeText(CrearReporteActivity.this, "Reporte enviado", Toast.LENGTH_SHORT).show();
+                    Intent intent= new Intent(CrearReporteActivity.this, ConsultarReporteActivity.class);
+                    intent.putExtra("nombre", nuevoReporte.getNombreInteresado());
+                    intent.putExtra("direccion", nuevoReporte.getDireccion());
+                    intent.putExtra("imagen", nuevoReporte.getImagenUrl());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Log.e("API", "Error al enviar reporte: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Reporte> call, Throwable t) {
+                Log.e("API", "Fallo en la conexión: " + t.getMessage());
+            }
+        });
     }
-
-
 }

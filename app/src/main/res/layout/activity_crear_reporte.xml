@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#474242">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,28 +13,43 @@
         android:id="@+id/et_nombre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre" />
+        android:hint="Nombre"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
     <AutoCompleteTextView
         android:id="@+id/et_colonia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Colonia"/>
+        android:hint="Colonia"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
     <EditText
         android:id="@+id/et_direccion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Direccion"/>
+        android:hint="Direccion"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
     <EditText
         android:id="@+id/et_celular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Phone"/>
+        android:hint="Phone"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
     <EditText
         android:id="@+id/et_correo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Correo electronico"
-        android:inputType="textEmailAddress"/>
+        android:inputType="textEmailAddress"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
     <Spinner
         android:id="@+id/spinner_tipoReporte"
         android:layout_width="match_parent"
@@ -42,19 +58,23 @@
         android:id="@+id/et_descptcion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descripcion"/>
-    <ImageView
-        android:id="@+id/iv_imagen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_camara"
-        android:onClick="Abrir camara"/>
-        
-    <Button
-        android:id="@+id/btn_enviar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Enviar reporte"/>
-        
+        android:hint="Descripcion"
+        android:textColorHint="@color/black"
+        android:textColor="@color/black"/>
+
+        <ImageView
+            android:id="@+id/iv_imagen"
+            android:layout_width="69dp"
+            android:layout_height="86dp"
+            android:onClick="Abrircamara"
+            android:src="@drawable/ic_camara" />
+
+        <Button
+            android:id="@+id/btn_enviar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar reporte"
+            android:backgroundTint="@color/guinda" />
+
     </LinearLayout>
 </ScrollView>
